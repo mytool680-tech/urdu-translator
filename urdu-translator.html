@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English to Urdu Translator — مترجم</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Playfair+Display:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1410;
+    --ink-soft: #4a4540;
+    --ink-muted: #8a8580;
+    --surface: #faf8f4;
+    --surface-2: #f2efe8;
+    --surface-3: #e8e4da;
+    --gold: #c9a84c;
+    --gold-light: #e8d5a0;
+    --gold-pale: #faf5e8;
+    --border: rgba(26,20,16,0.12);
+    --border-strong: rgba(26,20,16,0.25);
+    --radius: 14px;
+    --shadow: 0 2px 16px rgba(26,20,16,0.08), 0 1px 4px rgba(26,20,16,0.06);
+    --shadow-lg: 0 8px 40px rgba(26,20,16,0.12), 0 2px 8px rgba(26,20,16,0.08);
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background pattern */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(201,168,76,0.06) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(201,168,76,0.04) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .logo-mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .logo-urdu {
+    font-family: 'Noto Nastaliq Urdu', serif;
+    font-size: 28px;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .logo-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--border-strong);
+  }
+
+  .logo-en {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    letter-spacing: 0.02em;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    color: var(--ink-muted);
+    font-weight: 300;
+    letter-spacing: 0.01em;
+  }
+
+  .gold-line {
+    width: 48px;
+    height: 2px;
+    background: var(--gold);
+    margin: 16px auto 0;
+    border-radius: 1px;
+  }
+
+  /* Main translator card */
+  .translator-card {
+    background: white;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    animation: fadeUp 0.6s ease 0.1s both;
+  }
+
+  /* Language bar */
+  .lang-bar {
+    display: flex;
+    align-items: center;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+    padding: 0;
+  }
+
+  .lang-label {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 22px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .lang-flag {
+    font-size: 18px;
+  }
+
+  .arrow-center {
+    padding: 0 16px;
+    color: var(--gold);
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  /* Text panels */
+  .panels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 260px;
+  }
+
+  @media (max-width: 600px) {
+    .panels { grid-template-columns: 1fr; }
+    .panels .panel:first-child { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+
+  .panel {
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    position: relative;
+  }
+
+  .panel:first-child {
+    border-right: 1px solid var(--border);
+  }
+
+  .panel-inner {
+    flex: 1;
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  textarea {
+    flex: 1;
+    border: none;
+    outline: none;
+    resize: none;
+    background: transparent;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--ink);
+    line-height: 1.7;
+    width: 100%;
+    min-height: 200px;
+  }
+
+  textarea::placeholder { color: var(--ink-muted); font-weight: 300; }
+
+  .urdu-output {
+    flex: 1;
+    font-family: 'Noto Nastaliq Urdu', serif;
+    font-size: 21px;
+    line-height: 2.3;
+    direction: rtl;
+    text-align: right;
+    color: var(--ink);
+    min-height: 200px;
+    word-break: break-word;
+  }
+
+  .placeholder-ur {
+    font-family: 'Noto Nastaliq Urdu', serif;
+    color: var(--ink-muted);
+    font-size: 19px;
+    font-weight: 300;
+  }
+
+  /* Char count */
+  .char-count {
+    font-size: 12px;
+    color: var(--ink-muted);
+    text-align: right;
+    padding: 4px 22px 10px;
+  }
+
+  /* Action bar */
+  .action-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 22px;
+    border-top: 1px solid var(--border);
+    background: var(--surface-2);
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 22px;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.18s ease;
+  }
+
+  .btn-primary {
+    background: var(--ink);
+    color: white;
+    border-color: var(--ink);
+  }
+  .btn-primary:hover { background: #2d2620; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(26,20,16,0.25); }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .btn-secondary {
+    background: white;
+    color: var(--ink-soft);
+    border-color: var(--border-strong);
+  }
+  .btn-secondary:hover { background: var(--surface-3); }
+
+  .btn-gold {
+    background: var(--gold-pale);
+    color: #7a5c10;
+    border-color: var(--gold-light);
+  }
+  .btn-gold:hover { background: #f5edcc; }
+
+  .status-msg {
+    margin-left: auto;
+    font-size: 13px;
+    color: var(--ink-muted);
+    font-weight: 300;
+  }
+
+  .status-msg.success { color: #2d7a3a; }
+  .status-msg.error { color: #a0291a; }
+
+  /* Loading animation */
+  .loading-dots {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .loading-dots span {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: currentColor;
+    animation: dot-blink 1.2s infinite ease-in-out;
+    display: inline-block;
+  }
+  .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  /* Examples section */
+  .examples-section {
+    margin-top: 32px;
+    animation: fadeUp 0.6s ease 0.2s both;
+  }
+
+  .examples-title {
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-muted);
+    margin-bottom: 12px;
+  }
+
+  .examples-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .ex-pill {
+    padding: 8px 16px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .ex-pill:hover {
+    background: var(--gold-pale);
+    border-color: var(--gold-light);
+    color: #7a5c10;
+    transform: translateY(-1px);
+  }
+
+  /* Copy notification */
+  .copy-toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink);
+    color: white;
+    padding: 10px 24px;
+    border-radius: 100px;
+    font-size: 14px;
+    opacity: 0;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    z-index: 100;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .copy-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    margin-top: 48px;
+    font-size: 12px;
+    color: var(--ink-muted);
+    animation: fadeUp 0.6s ease 0.3s both;
+  }
+
+  footer a { color: var(--gold); text-decoration: none; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes dot-blink {
+    0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+    40% { opacity: 1; transform: scale(1.1); }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header>
+    <div class="logo-mark">
+      <span class="logo-urdu">مترجم</span>
+      <span class="logo-dot"></span>
+      <span class="logo-en">Translator</span>
+    </div>
+    <h1>English to Urdu</h1>
+    <p class="subtitle">انگریزی سے اردو — Free, fast, and always available</p>
+    <div class="gold-line"></div>
+  </header>
+
+  <div class="translator-card">
+    <div class="lang-bar">
+      <div class="lang-label">
+        <span class="lang-flag">🇬🇧</span>
+        English
+      </div>
+      <div class="arrow-center">→</div>
+      <div class="lang-label">
+        <span class="lang-flag">🇵🇰</span>
+        اردو — Urdu
+      </div>
+    </div>
+
+    <div class="panels">
+      <div class="panel">
+        <div class="panel-inner">
+          <textarea
+            id="eng-input"
+            placeholder="Type or paste your English text here..."
+            oninput="onInput()"
+            maxlength="2000"
+          ></textarea>
+        </div>
+        <div class="char-count"><span id="char-count">0</span> / 2000</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-inner">
+          <div class="urdu-output" id="urdu-out">
+            <span class="placeholder-ur">ترجمہ یہاں ظاہر ہوگا</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-bar">
+      <button class="btn btn-primary" id="btn-translate" onclick="translate()" disabled>
+        ✦ Translate
+      </button>
+      <button class="btn btn-secondary" onclick="clearAll()">
+        Clear
+      </button>
+      <button class="btn btn-gold" id="btn-copy" onclick="copyText()" style="display:none">
+        ⧉ Copy Urdu
+      </button>
+      <span class="status-msg" id="status-msg"></span>
+    </div>
+  </div>
+
+  <div class="examples-section">
+    <div class="examples-title">Try an example</div>
+    <div class="examples-grid">
+      <button class="ex-pill" onclick="setExample('How are you? I hope you are doing well today.')">How are you?</button>
+      <button class="ex-pill" onclick="setExample('The weather is very beautiful today.')">Beautiful weather</button>
+      <button class="ex-pill" onclick="setExample('I love Pakistan and its culture.')">Love Pakistan</button>
+      <button class="ex-pill" onclick="setExample('Please help me understand this.')">Ask for help</button>
+      <button class="ex-pill" onclick="setExample('Technology is changing the world very rapidly.')">Technology</button>
+      <button class="ex-pill" onclick="setExample('Education is the most important thing in life.')">Education</button>
+      <button class="ex-pill" onclick="setExample('Good morning! Have a wonderful day.')">Good morning</button>
+      <button class="ex-pill" onclick="setExample('I want to learn the Urdu language.')">Learn Urdu</button>
+    </div>
+  </div>
+
+  <footer>
+    <p>Made with ❤️ for Urdu speakers &nbsp;·&nbsp; Powered by <a href="https://mymemory.translated.net" target="_blank">MyMemory API</a> (Free)</p>
+    <p style="margin-top:6px">No ads · No tracking · No cost</p>
+  </footer>
+
+</div>
+
+<div class="copy-toast" id="copy-toast">✓ Urdu text copied!</div>
+
+<script>
+  let lastTranslation = '';
+
+  function onInput() {
+    const val = document.getElementById('eng-input').value;
+    document.getElementById('char-count').textContent = val.length;
+    document.getElementById('btn-translate').disabled = !val.trim();
+  }
+
+  function setExample(text) {
+    document.getElementById('eng-input').value = text;
+    onInput();
+    document.getElementById('eng-input').focus();
+  }
+
+  async function translate() {
+    const text = document.getElementById('eng-input').value.trim();
+    if (!text) return;
+
+    const btn = document.getElementById('btn-translate');
+    const statusEl = document.getElementById('status-msg');
+    const outEl = document.getElementById('urdu-out');
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loading-dots"><span></span><span></span><span></span></span> Translating';
+    statusEl.className = 'status-msg';
+    statusEl.textContent = '';
+    outEl.innerHTML = '<span class="placeholder-ur"><span class="loading-dots"><span></span><span></span><span></span></span></span>';
+    document.getElementById('btn-copy').style.display = 'none';
+
+    try {
+      const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|ur`;
+      const res = await fetch(url);
+      const data = await res.json();
+
+      if (data.responseStatus === 200 && data.responseData && data.responseData.translatedText) {
+        lastTranslation = data.responseData.translatedText;
+        outEl.textContent = lastTranslation;
+        document.getElementById('btn-copy').style.display = 'inline-flex';
+        statusEl.className = 'status-msg success';
+        statusEl.textContent = '✓ Translation complete';
+        setTimeout(() => statusEl.textContent = '', 3000);
+      } else {
+        outEl.innerHTML = '<span class="placeholder-ur" style="color:#a0291a">ترجمہ نہیں ہوسکا، دوبارہ کوشش کریں</span>';
+        statusEl.className = 'status-msg error';
+        statusEl.textContent = 'Translation failed. Try again.';
+      }
+    } catch (err) {
+      outEl.innerHTML = '<span class="placeholder-ur" style="color:#a0291a">نیٹ ورک خرابی</span>';
+      statusEl.className = 'status-msg error';
+      statusEl.textContent = 'Network error. Check your connection.';
+    }
+
+    btn.innerHTML = '✦ Translate';
+    btn.disabled = false;
+  }
+
+  function clearAll() {
+    document.getElementById('eng-input').value = '';
+    document.getElementById('urdu-out').innerHTML = '<span class="placeholder-ur">ترجمہ یہاں ظاہر ہوگا</span>';
+    document.getElementById('char-count').textContent = '0';
+    document.getElementById('btn-translate').disabled = true;
+    document.getElementById('btn-copy').style.display = 'none';
+    document.getElementById('status-msg').textContent = '';
+    lastTranslation = '';
+  }
+
+  function copyText() {
+    if (!lastTranslation) return;
+    navigator.clipboard.writeText(lastTranslation).then(() => {
+      const toast = document.getElementById('copy-toast');
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2500);
+    });
+  }
+
+  // Enter key to translate
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') translate();
+  });
+</script>
+</body>
+</html>
